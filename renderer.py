@@ -7,6 +7,7 @@ from PIL import Image, ImageDraw, ImageFont
 BASE_DIR = Path(__file__).resolve().parent
 FONT_PATH = BASE_DIR / "fonts" / "arial-bold.ttf"
 EMOJI_DIR = BASE_DIR / "emojis"
+WARNING_EMOJI_CODE = "26A0-FE0F"
 FONT_ALIASES = {
     "arial": "arial.ttf",
     "arial-bold": "arial-bold.ttf",
@@ -140,6 +141,10 @@ def load_emojis():
 
 
 EMOJIS = load_emojis()
+WARNING_EMOJI_PATH = EMOJIS.get(WARNING_EMOJI_CODE)
+
+if WARNING_EMOJI_PATH is None:
+    raise RuntimeError("Missing fallback emoji: {}".format(WARNING_EMOJI_CODE))
 
 
 def measure_text(draw, text, font):
@@ -171,7 +176,12 @@ def tokenize(text):
             continue
 
         if any(unicodedata.category(char) == "So" for char in cluster):
+            if buffer:
+                tokens.append(("text", "".join(buffer)))
+                buffer = []
             unsupported.append("{} ({})".format(cluster, code))
+            tokens.append(("emoji", WARNING_EMOJI_PATH))
+            continue
 
         buffer.append(cluster)
 
