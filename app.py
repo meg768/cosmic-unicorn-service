@@ -12,6 +12,10 @@ def bad_request(message):
     return Response(message, status=400, mimetype="text/plain; charset=utf-8")
 
 
+def make_header_safe(value):
+    return value.encode("ascii", "backslashreplace").decode("ascii")
+
+
 @app.get("/")
 def render_png():
     try:
@@ -35,7 +39,7 @@ def render_png():
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
 
     if unsupported:
-        response.headers["X-Unsupported-Emoji"] = " | ".join(unsupported)[:1000]
+        response.headers["X-Unsupported-Emoji"] = make_header_safe(" | ".join(unsupported))[:1000]
 
     return response
 
