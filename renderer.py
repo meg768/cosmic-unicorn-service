@@ -11,7 +11,7 @@ EMOJI_DIR = BASE_DIR / "emojis"
 DEFAULT_TEXT = "Ticker"
 DEFAULT_HEIGHT = 32
 DEFAULT_WIDTH = None
-DEFAULT_TEXT_COLOR = (255, 210, 40)
+DEFAULT_TEXT_COLOR = (255, 0, 0)
 DEFAULT_BACKGROUND = (0, 0, 0)
 DEFAULT_PADDING_RATIO = 0.375
 DEFAULT_GAP_RATIO = 0.1
@@ -102,13 +102,7 @@ def load_emojis():
     emojis = {}
 
     for path in sorted(EMOJI_DIR.glob("*.png")):
-        stem = path.stem
-        parts = stem.split("_")
-        if len(parts) == 2:
-            _, code = parts
-        else:
-            code = stem
-        emojis[code.upper()] = path
+        emojis[path.stem.upper()] = path
 
     return emojis
 

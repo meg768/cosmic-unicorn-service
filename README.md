@@ -22,19 +22,35 @@ Then open:
 http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32
 ```
 
+## Build Emojis
+
+On your Mac, you can build local emoji PNG files with Apple Color Emoji and store them in `emojis/`:
+
+```bash
+python3 create-emojis.py "🥸🥳🕵🏻"
+```
+
+This writes files such as `emojis/1f973.png` and `emojis/1f575-1f3fb.png`.
+
+If you want to replace existing files:
+
+```bash
+python3 create-emojis.py "🥳" --overwrite
+```
+
 ## Parameters
 
 - `text`: message to render
 - `height`: output height in pixels, default `32`
 - `width`: optional minimum width in pixels
-- `color`: text color in `RRGGBB`, default `FFD228`
+- `color`: text color in `RRGGBB`, default `FF0000`
 - `background`: background color in `RRGGBB`, default `000000`
 - `padding`: optional left/right padding in pixels
 - `gap`: optional gap between text and emoji in pixels
 
 ## Notes
 
-- Style is fixed to a yellow-on-black ticker look.
+- Style is fixed to a red-on-black ticker look.
 - Emoji PNG files live in `emojis/`.
 - Font files live in `fonts/`.
 - Unsupported emoji are left as text and reported in the `X-Unsupported-Emoji` response header.
