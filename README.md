@@ -20,6 +20,7 @@ Then open:
 
 ```text
 http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32
+http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&font=impact
 ```
 
 ## Build Emojis
@@ -47,10 +48,12 @@ python3 create-emojis.py "🥳" --overwrite
 - `background`: background color in `RRGGBB`, default `000000`
 - `padding`: optional left/right padding in pixels
 - `gap`: optional gap between text and emoji in pixels
+- `font`: optional font name such as `arial-bold`, `impact`, `digital`, `gotham`, `prototype`
 
 ## Notes
 
 - Style is fixed to a red-on-black ticker look.
 - Emoji PNG files live in `emojis/`.
 - Font files live in `fonts/`.
+- Available fonts: `arial`, `arial-bold`, `arial-black`, `arial-rounded`, `calibri`, `century-gothic`, `century-gothic-italic`, `digital`, `djb-digital`, `gotham`, `impact`, `prototype`, `roboto`, `tahoma`, `verdana`, `verdana-bold`
 - Unsupported emoji are left as text and reported in the `X-Unsupported-Emoji` response header.

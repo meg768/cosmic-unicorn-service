@@ -5,8 +5,26 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 BASE_DIR = Path(__file__).resolve().parent
-FONT_PATH = BASE_DIR / "fonts" / "Arial-Bold.ttf"
+FONT_PATH = BASE_DIR / "fonts" / "arial-bold.ttf"
 EMOJI_DIR = BASE_DIR / "emojis"
+FONT_ALIASES = {
+    "arial": "arial.ttf",
+    "arial-bold": "arial-bold.ttf",
+    "arial-black": "arial-black.ttf",
+    "arial-rounded": "arial-rounded-bold.ttf",
+    "calibri": "calibri-bold.ttf",
+    "century-gothic": "century-gothic-bold.ttf",
+    "century-gothic-italic": "century-gothic-bold-italic.ttf",
+    "digital": "digital.ttf",
+    "djb-digital": "djb-get-digital.ttf",
+    "gotham": "gotham-bold.ttf",
+    "impact": "impact.ttf",
+    "prototype": "prototype.ttf",
+    "roboto": "roboto.ttf",
+    "tahoma": "tahoma-bold.ttf",
+    "verdana": "verdana.ttf",
+    "verdana-bold": "verdana-bold.ttf",
+}
 
 DEFAULT_TEXT = "Ticker"
 DEFAULT_HEIGHT = 32
@@ -41,6 +59,20 @@ def parse_hex_color(value, default):
         raise ValueError("Color must use RRGGBB format")
 
     return tuple(int(value[index:index + 2], 16) for index in (0, 2, 4))
+
+
+def resolve_font_path(font_name):
+    if font_name is None or font_name == "":
+        return FONT_PATH
+
+    key = font_name.strip().lower()
+    filename = FONT_ALIASES.get(key)
+
+    if filename is None:
+        supported = ", ".join(sorted(FONT_ALIASES))
+        raise ValueError(f"Unknown font '{font_name}'. Supported fonts: {supported}")
+
+    return BASE_DIR / "fonts" / filename
 
 
 def split_graphemes(text):
@@ -157,6 +189,7 @@ def render_banner(
     background=DEFAULT_BACKGROUND,
     padding=None,
     gap=None,
+    font_name=None,
 ):
     text = text or DEFAULT_TEXT
     height = clamp_int(height, 16, 256, DEFAULT_HEIGHT)
@@ -167,7 +200,7 @@ def render_banner(
     font_size = max(12, round(height * DEFAULT_FONT_RATIO))
     emoji_size = max(12, min(height - 4, round(font_size * DEFAULT_EMOJI_RATIO)))
 
-    font = ImageFont.truetype(str(FONT_PATH), size=font_size)
+    font = ImageFont.truetype(str(resolve_font_path(font_name)), size=font_size)
     probe = Image.new("RGBA", (1, 1), background + (255,))
     draw = ImageDraw.Draw(probe)
 
