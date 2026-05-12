@@ -28,16 +28,11 @@ http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&font=
 On your Mac, you can build local emoji PNG files with Apple Color Emoji and store them in `emojis/`:
 
 ```bash
-python3 create-emojis.py "🥸🥳🕵🏻"
+python3 create-emojis.py
 ```
 
-This writes files such as `emojis/1f973.png` and `emojis/1f575-1f3fb.png`.
-
-If you want to replace existing files:
-
-```bash
-python3 create-emojis.py "🥳" --overwrite
-```
+Edit the `EMOJIS` constant in `emojis.py` and run the script again. It writes files such as `emojis/1f973.png` and `emojis/1f575-1f3fb.png`.
+Existing files are always overwritten.
 
 ## Parameters
 
