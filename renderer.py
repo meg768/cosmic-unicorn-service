@@ -109,6 +109,18 @@ def default_font_size_for_height(height):
     return max(12, round(height * DEFAULT_FONT_RATIO))
 
 
+def normalize_text(text):
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    if "\n" not in text:
+        return text
+
+    parts = [part.strip() for part in text.split("\n") if part.strip()]
+    if not parts:
+        return ""
+
+    return " ".join(parts)
+
+
 def split_graphemes(text):
     clusters = []
     current = ""
@@ -332,7 +344,7 @@ def render_banner(
     font_name=None,
     font_size=None,
 ):
-    text = text or DEFAULT_TEXT
+    text = normalize_text(text or DEFAULT_TEXT)
     height = clamp_int(height, 16, 256, DEFAULT_HEIGHT)
     width = None if width in (None, "") else clamp_int(width, 16, 4096, DEFAULT_HEIGHT)
     padding = clamp_int(padding, 0, 512, round(height * DEFAULT_PADDING_RATIO)) if padding is not None else round(height * DEFAULT_PADDING_RATIO)
