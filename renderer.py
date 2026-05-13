@@ -1,7 +1,7 @@
 from pathlib import Path
 import unicodedata
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageColor, ImageDraw, ImageFont
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -55,11 +55,21 @@ def parse_hex_color(value, default):
     if value is None:
         return default
 
-    value = value.strip().lstrip("#")
-    if len(value) != 6:
-        raise ValueError("Color must use RRGGBB format")
+    value = value.strip()
+    if not value:
+        return default
 
-    return tuple(int(value[index:index + 2], 16) for index in (0, 2, 4))
+    if not value.startswith("#") and len(value) in (3, 6):
+        hex_chars = "0123456789abcdefABCDEF"
+        if all(char in hex_chars for char in value):
+            value = "#" + value
+
+    try:
+        color = ImageColor.getrgb(value)
+    except ValueError:
+        raise ValueError("Color must use CSS color names or hex like RRGGBB")
+
+    return color[:3]
 
 
 def resolve_font_path(font_name):

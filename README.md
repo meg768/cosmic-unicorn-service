@@ -39,8 +39,8 @@ Existing files are always overwritten.
 - `text`: message to render
 - `height`: output height in pixels, default `32`
 - `width`: optional minimum width in pixels
-- `color`: text color in `RRGGBB`, default `FF0000`
-- `background`: background color in `RRGGBB`, default `000000`
+- `color`: text color as CSS color name or hex like `RRGGBB`, default `FF0000`
+- `background`: background color as CSS color name or hex like `RRGGBB`, default `000000`
 - `padding`: optional left/right padding in pixels
 - `gap`: optional gap between text and emoji in pixels
 - `font`: optional font name such as `arial-bold`, `impact`, `digital`, `gotham`, `prototype`
