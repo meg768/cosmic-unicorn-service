@@ -26,7 +26,7 @@ def render_png():
             padding=request.args.get("padding"),
             gap=request.args.get("gap"),
             font_name=request.args.get("font"),
-            font_size=request.args.get("size", request.args.get("font_size")),
+            font_size=request.args.get("size"),
             text_color=parse_hex_color(request.args.get("color"), DEFAULT_TEXT_COLOR),
             background=parse_hex_color(request.args.get("background"), DEFAULT_BACKGROUND),
         )
