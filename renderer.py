@@ -35,7 +35,7 @@ DEFAULT_BACKGROUND = (0, 0, 0)
 DEFAULT_PADDING_RATIO = 0.375
 DEFAULT_GAP_RATIO = 0.1
 DEFAULT_FONT_RATIO = 0.75
-DEFAULT_EMOJI_RATIO = 0.95
+DEFAULT_EMOJI_RATIO = 1.2
 MIN_FONT_SIZE = 8
 MAX_FONT_SIZE = 512
 
@@ -225,7 +225,7 @@ def render_banner(
     else:
         font_size = clamp_int(font_size, MIN_FONT_SIZE, MAX_FONT_SIZE, max(12, round(height * DEFAULT_FONT_RATIO)))
 
-    emoji_size = max(12, min(height - 4, round(font_size * DEFAULT_EMOJI_RATIO)))
+    emoji_size = max(12, min(height, round(font_size * DEFAULT_EMOJI_RATIO)))
 
     font = ImageFont.truetype(str(resolve_font_path(font_name)), size=font_size)
     probe = Image.new("RGBA", (1, 1), background + (255,))
