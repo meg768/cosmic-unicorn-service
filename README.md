@@ -37,7 +37,7 @@ Existing files are always overwritten.
 ## Parameters
 
 - `text`: message to render
-  Inline color syntax is supported, for example `Detta är [color=blue]blått[/color] och [color=#FF00FF]magenta[/color]`.
+  Inline style syntax is supported, for example `Detta är [color=blue]blått[/color] och [font=impact]detta[/font]`.
 - `height`: output height in pixels, default `32`
 - `width`: optional minimum width in pixels
 - `color`: text color as CSS color name or hex like `RRGGBB`, default `FF0000`
