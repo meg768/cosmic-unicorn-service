@@ -221,32 +221,43 @@ def load_emoji_image(emoji_path, emoji_size):
 def parse_color_segments(text, default_color):
     segments = []
     current_color = default_color
+    color_stack = []
     buffer = []
     index = 0
 
     while index < len(text):
-        if text.startswith("{{", index):
-            close_index = text.find("}}", index + 2)
+        if text.startswith("[/color]", index):
+            if buffer:
+                segments.append((current_color, "".join(buffer)))
+                buffer = []
+
+            current_color = color_stack.pop() if color_stack else default_color
+            index += len("[/color]")
+            continue
+
+        if text.startswith("[color=", index):
+            close_index = text.find("]", index + 7)
             if close_index == -1:
                 buffer.append(text[index:])
                 break
 
-            tag = text[index + 2:close_index].strip()
-            if tag:
-                if buffer:
-                    segments.append((current_color, "".join(buffer)))
-                    buffer = []
+            color_value = text[index + 7:close_index].strip()
+            if not color_value:
+                raise ValueError("Color tag must use [color=name]...[/color]")
 
-                if tag == "/":
-                    current_color = default_color
-                else:
-                    try:
-                        current_color = parse_color_value(tag)
-                    except ValueError:
-                        raise ValueError("Unknown inline color '{}'".format(tag))
+            if buffer:
+                segments.append((current_color, "".join(buffer)))
+                buffer = []
 
-                index = close_index + 2
-                continue
+            try:
+                next_color = parse_color_value(color_value)
+            except ValueError:
+                raise ValueError("Unknown inline color '{}'".format(color_value))
+
+            color_stack.append(current_color)
+            current_color = next_color
+            index = close_index + 1
+            continue
 
         buffer.append(text[index])
         index += 1
