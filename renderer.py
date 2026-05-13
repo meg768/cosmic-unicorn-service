@@ -44,6 +44,10 @@ VS16 = "\ufe0f"
 KEYCAP = "\u20e3"
 SKIN_TONE_RANGE = range(0x1F3FB, 0x1F400)
 REGIONAL_RANGE = range(0x1F1E6, 0x1F200)
+EMOJI_SYMBOL_RANGES = (
+    range(0x2300, 0x2800),
+    range(0x1F000, 0x20000),
+)
 
 
 def clamp_int(value, minimum, maximum, default):
@@ -160,6 +164,26 @@ def cluster_to_codepoints(cluster):
     return "-".join(codepoints)
 
 
+def is_emoji_like_cluster(cluster):
+    for char in cluster:
+        codepoint = ord(char)
+
+        if char in (ZWJ, VS16, KEYCAP):
+            return True
+
+        if unicodedata.combining(char):
+            return True
+
+        if codepoint in SKIN_TONE_RANGE or codepoint in REGIONAL_RANGE:
+            return True
+
+        for emoji_range in EMOJI_SYMBOL_RANGES:
+            if codepoint in emoji_range:
+                return True
+
+    return False
+
+
 def load_emojis():
     emojis = {}
 
@@ -251,7 +275,7 @@ def tokenize(text, default_color):
                 tokens.append(("emoji", emoji_path))
                 continue
 
-            if any(unicodedata.category(char) == "So" for char in cluster):
+            if is_emoji_like_cluster(cluster):
                 if buffer:
                     tokens.append(("text", "".join(buffer), segment_color))
                     buffer = []
