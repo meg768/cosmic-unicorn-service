@@ -249,21 +249,19 @@ def load_emoji_image(emoji_path, emoji_size):
     return image.resize((emoji_size, emoji_size), Image.Resampling.LANCZOS)
 
 
-def parse_style_segments(text, default_color, default_font_name, default_font_size):
+def parse_style_segments(text, default_color, default_font_name):
     segments = []
     current_color = default_color
     current_font_name = default_font_name
-    current_font_size = default_font_size
     color_stack = []
     font_stack = []
-    size_stack = []
     buffer = []
     index = 0
 
     while index < len(text):
         if text.startswith("[/color]", index):
             if buffer:
-                segments.append((current_color, current_font_name, current_font_size, "".join(buffer)))
+                segments.append((current_color, current_font_name, "".join(buffer)))
                 buffer = []
 
             current_color = color_stack.pop() if color_stack else default_color
@@ -281,7 +279,7 @@ def parse_style_segments(text, default_color, default_font_name, default_font_si
                 raise ValueError("Color tag must use [color=name]...[/color]")
 
             if buffer:
-                segments.append((current_color, current_font_name, current_font_size, "".join(buffer)))
+                segments.append((current_color, current_font_name, "".join(buffer)))
                 buffer = []
 
             try:
@@ -296,7 +294,7 @@ def parse_style_segments(text, default_color, default_font_name, default_font_si
 
         if text.startswith("[/font]", index):
             if buffer:
-                segments.append((current_color, current_font_name, current_font_size, "".join(buffer)))
+                segments.append((current_color, current_font_name, "".join(buffer)))
                 buffer = []
 
             current_font_name = font_stack.pop() if font_stack else default_font_name
@@ -314,7 +312,7 @@ def parse_style_segments(text, default_color, default_font_name, default_font_si
                 raise ValueError("Font tag must use [font=name]...[/font]")
 
             if buffer:
-                segments.append((current_color, current_font_name, current_font_size, "".join(buffer)))
+                segments.append((current_color, current_font_name, "".join(buffer)))
                 buffer = []
 
             resolve_font_path(font_value)
@@ -323,55 +321,20 @@ def parse_style_segments(text, default_color, default_font_name, default_font_si
             index = close_index + 1
             continue
 
-        if text.startswith("[/size]", index):
-            if buffer:
-                segments.append((current_color, current_font_name, current_font_size, "".join(buffer)))
-                buffer = []
-
-            current_font_size = size_stack.pop() if size_stack else default_font_size
-            index += len("[/size]")
-            continue
-
-        if text.startswith("[size=", index):
-            close_index = text.find("]", index + 6)
-            if close_index == -1:
-                buffer.append(text[index:])
-                break
-
-            size_value = text[index + 6:close_index].strip()
-            if not size_value:
-                raise ValueError("Size tag must use [size=number]...[/size]")
-
-            if buffer:
-                segments.append((current_color, current_font_name, current_font_size, "".join(buffer)))
-                buffer = []
-
-            try:
-                next_size = clamp_int(int(size_value), MIN_FONT_SIZE, MAX_FONT_SIZE, default_font_size)
-            except Exception:
-                raise ValueError("Unknown inline size '{}'".format(size_value))
-
-            size_stack.append(current_font_size)
-            current_font_size = next_size
-            index = close_index + 1
-            continue
-
         buffer.append(text[index])
         index += 1
 
     if buffer:
-        segments.append((current_color, current_font_name, current_font_size, "".join(buffer)))
+        segments.append((current_color, current_font_name, "".join(buffer)))
 
     return segments
 
 
-def tokenize(text, default_color, default_font_name, default_font_size):
+def tokenize(text, default_color, default_font_name):
     unsupported = []
     tokens = []
 
-    for segment_color, segment_font_name, segment_font_size, segment_text in parse_style_segments(
-        text, default_color, default_font_name, default_font_size
-    ):
+    for segment_color, segment_font_name, segment_text in parse_style_segments(text, default_color, default_font_name):
         buffer = []
 
         for cluster in split_graphemes(segment_text):
@@ -380,14 +343,14 @@ def tokenize(text, default_color, default_font_name, default_font_size):
 
             if emoji_path is not None:
                 if buffer:
-                    tokens.append(("text", "".join(buffer), segment_color, segment_font_name, segment_font_size))
+                    tokens.append(("text", "".join(buffer), segment_color, segment_font_name))
                     buffer = []
                 tokens.append(("emoji", emoji_path))
                 continue
 
             if is_emoji_like_cluster(cluster):
                 if buffer:
-                    tokens.append(("text", "".join(buffer), segment_color, segment_font_name, segment_font_size))
+                    tokens.append(("text", "".join(buffer), segment_color, segment_font_name))
                     buffer = []
                 unsupported.append("{} ({})".format(cluster, code))
                 tokens.append(("emoji", WARNING_EMOJI_PATH))
@@ -396,7 +359,7 @@ def tokenize(text, default_color, default_font_name, default_font_size):
             buffer.append(cluster)
 
         if buffer:
-            tokens.append(("text", "".join(buffer), segment_color, segment_font_name, segment_font_size))
+            tokens.append(("text", "".join(buffer), segment_color, segment_font_name))
 
     return tokens, unsupported
 
@@ -429,22 +392,22 @@ def render_banner(
 
     font_cache = {}
 
-    def get_font(name, size):
-        key = "{}|{}".format(name or "", size)
+    def get_font(name):
+        key = name or ""
         if key not in font_cache:
-            font_cache[key] = ImageFont.truetype(str(resolve_font_path(name)), size=size)
+            font_cache[key] = ImageFont.truetype(str(resolve_font_path(name)), size=font_size)
         return font_cache[key]
 
     probe = Image.new("RGBA", (1, 1), background + (255,))
     draw = ImageDraw.Draw(probe)
 
-    tokens, unsupported = tokenize(text, text_color, font_name, font_size)
+    tokens, unsupported = tokenize(text, text_color, font_name)
 
     content_width = 0
     for token in tokens:
         token_type = token[0]
         if token_type == "text":
-            token_font = get_font(token[3], token[4])
+            token_font = get_font(token[3])
             token_width = measure_text_width(draw, token[1], token_font)
         else:
             token_width = emoji_size
@@ -465,7 +428,7 @@ def render_banner(
         if token_type == "text":
             content = token[1]
             token_color = token[2]
-            token_font = get_font(token[3], token[4])
+            token_font = get_font(token[3])
             draw.text((x, text_center_y), content, font=token_font, fill=token_color, anchor="lm")
             x += measure_text_width(draw, content, token_font)
         else:
