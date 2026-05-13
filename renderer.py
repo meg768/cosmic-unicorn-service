@@ -66,6 +66,19 @@ def parse_hex_color(value, default):
         if all(char in hex_chars for char in value):
             value = "#" + value
 
+    return parse_color_value(value)
+
+
+def parse_color_value(value):
+    value = value.strip()
+    if not value:
+        raise ValueError("Color must use CSS color names or hex like RRGGBB")
+
+    if not value.startswith("#") and len(value) in (3, 6):
+        hex_chars = "0123456789abcdefABCDEF"
+        if all(char in hex_chars for char in value):
+            value = "#" + value
+
     try:
         color = ImageColor.getrgb(value)
     except ValueError:
@@ -175,34 +188,75 @@ def load_emoji_image(emoji_path, emoji_size):
     return image.resize((emoji_size, emoji_size), Image.Resampling.LANCZOS)
 
 
-def tokenize(text):
-    unsupported = []
-    tokens = []
+def parse_color_segments(text, default_color):
+    segments = []
+    current_color = default_color
     buffer = []
+    index = 0
 
-    for cluster in split_graphemes(text):
-        code = cluster_to_codepoints(cluster)
-        emoji_path = EMOJIS.get(code)
+    while index < len(text):
+        if text.startswith("{{", index):
+            close_index = text.find("}}", index + 2)
+            if close_index == -1:
+                buffer.append(text[index:])
+                break
 
-        if emoji_path is not None:
-            if buffer:
-                tokens.append(("text", "".join(buffer)))
-                buffer = []
-            tokens.append(("emoji", emoji_path))
-            continue
+            tag = text[index + 2:close_index].strip()
+            if tag:
+                if buffer:
+                    segments.append((current_color, "".join(buffer)))
+                    buffer = []
 
-        if any(unicodedata.category(char) == "So" for char in cluster):
-            if buffer:
-                tokens.append(("text", "".join(buffer)))
-                buffer = []
-            unsupported.append("{} ({})".format(cluster, code))
-            tokens.append(("emoji", WARNING_EMOJI_PATH))
-            continue
+                if tag == "/":
+                    current_color = default_color
+                else:
+                    try:
+                        current_color = parse_color_value(tag)
+                    except ValueError:
+                        raise ValueError("Unknown inline color '{}'".format(tag))
 
-        buffer.append(cluster)
+                index = close_index + 2
+                continue
+
+        buffer.append(text[index])
+        index += 1
 
     if buffer:
-        tokens.append(("text", "".join(buffer)))
+        segments.append((current_color, "".join(buffer)))
+
+    return segments
+
+
+def tokenize(text, default_color):
+    unsupported = []
+    tokens = []
+
+    for segment_color, segment_text in parse_color_segments(text, default_color):
+        buffer = []
+
+        for cluster in split_graphemes(segment_text):
+            code = cluster_to_codepoints(cluster)
+            emoji_path = EMOJIS.get(code)
+
+            if emoji_path is not None:
+                if buffer:
+                    tokens.append(("text", "".join(buffer), segment_color))
+                    buffer = []
+                tokens.append(("emoji", emoji_path))
+                continue
+
+            if any(unicodedata.category(char) == "So" for char in cluster):
+                if buffer:
+                    tokens.append(("text", "".join(buffer), segment_color))
+                    buffer = []
+                unsupported.append("{} ({})".format(cluster, code))
+                tokens.append(("emoji", WARNING_EMOJI_PATH))
+                continue
+
+            buffer.append(cluster)
+
+        if buffer:
+            tokens.append(("text", "".join(buffer), segment_color))
 
     return tokens, unsupported
 
@@ -237,12 +291,13 @@ def render_banner(
     probe = Image.new("RGBA", (1, 1), background + (255,))
     draw = ImageDraw.Draw(probe)
 
-    tokens, unsupported = tokenize(text)
+    tokens, unsupported = tokenize(text, text_color)
 
     content_width = 0
-    for token_type, content in tokens:
+    for token in tokens:
+        token_type = token[0]
         if token_type == "text":
-            token_width, _ = measure_text(draw, content, font)
+            token_width, _ = measure_text(draw, token[1], font)
         else:
             token_width = emoji_size
         content_width += token_width
@@ -256,13 +311,17 @@ def render_banner(
     draw = ImageDraw.Draw(canvas)
 
     x = padding
-    for token_type, content in tokens:
+    for token in tokens:
+        token_type = token[0]
         if token_type == "text":
+            content = token[1]
+            token_color = token[2]
             bbox = draw.textbbox((0, 0), content, font=font)
             y = (height - (bbox[3] - bbox[1])) // 2 - bbox[1]
-            draw.text((x, y), content, font=font, fill=text_color)
+            draw.text((x, y), content, font=font, fill=token_color)
             x += bbox[2] - bbox[0]
         else:
+            content = token[1]
             emoji = load_emoji_image(content, emoji_size)
             y = (height - emoji.height) // 2
             canvas.alpha_composite(emoji, (x, y))
