@@ -37,7 +37,7 @@ Existing files are always overwritten.
 ## Parameters
 
 - `text`: message to render
-  Inline style syntax is supported, for example `Detta är [color=blue]blått[/color] och [font=impact]detta[/font]`. Global text size can also be set by prefixing the text with something like `[size=10]`.
+  Inline style syntax is supported, for example `Detta är [color=blue]blått[/color] och [font=impact]detta[/font]`. Global directives can be set by prefixing the text with something like `[size=10,font=impact,color=red]`.
 - `height`: output height in pixels, default `32`
 - `width`: optional minimum width in pixels
 - `color`: text color as CSS color name or hex like `RRGGBB`, default `FF0000`

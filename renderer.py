@@ -121,30 +121,53 @@ def normalize_text(text):
     return " ".join(parts)
 
 
-def extract_global_size(text, default_font_size):
-    current_size = default_font_size
-    index = 0
+def extract_global_directives(text, default_font_size, default_font_name, default_color):
+    if not text.startswith("["):
+        return text, default_font_size, default_font_name, default_color
 
-    while text.startswith("[size=", index):
-        close_index = text.find("]", index + 6)
-        if close_index == -1:
-            break
+    close_index = text.find("]")
+    if close_index == -1:
+        return text, default_font_size, default_font_name, default_color
 
-        size_value = text[index + 6:close_index].strip()
-        if not size_value:
-            break
+    directive = text[1:close_index].strip()
+    if "," not in directive:
+        return text, default_font_size, default_font_name, default_color
 
-        try:
-            current_size = clamp_int(int(size_value), MIN_FONT_SIZE, MAX_FONT_SIZE, default_font_size)
-        except Exception:
-            break
+    next_font_size = default_font_size
+    next_font_name = default_font_name
+    next_color = default_color
 
-        index = close_index + 1
+    parts = [part.strip() for part in directive.split(",") if part.strip()]
+    if not parts:
+        return text, default_font_size, default_font_name, default_color
 
-    if index == 0:
-        return text, default_font_size
+    for part in parts:
+        if "=" not in part:
+            return text, default_font_size, default_font_name, default_color
 
-    return text[index:].lstrip(), current_size
+        key, value = [piece.strip() for piece in part.split("=", 1)]
+        key = key.lower()
+
+        if key == "size":
+            try:
+                next_font_size = clamp_int(int(value), MIN_FONT_SIZE, MAX_FONT_SIZE, default_font_size)
+            except Exception:
+                return text, default_font_size, default_font_name, default_color
+        elif key == "font":
+            try:
+                resolve_font_path(value)
+            except ValueError:
+                return text, default_font_size, default_font_name, default_color
+            next_font_name = value
+        elif key == "color":
+            try:
+                next_color = parse_color_value(value)
+            except ValueError:
+                return text, default_font_size, default_font_name, default_color
+        else:
+            return text, default_font_size, default_font_name, default_color
+
+    return text[close_index + 1:].lstrip(), next_font_size, next_font_name, next_color
 
 
 def split_graphemes(text):
@@ -414,7 +437,9 @@ def render_banner(
     else:
         font_size = clamp_int(font_size, MIN_FONT_SIZE, MAX_FONT_SIZE, default_font_size)
 
-    text, font_size = extract_global_size(text, font_size)
+    text, font_size, font_name, text_color = extract_global_directives(
+        text, font_size, font_name, text_color
+    )
     emoji_size = max(12, min(height, round(font_size * DEFAULT_EMOJI_RATIO)))
 
     font_cache = {}
