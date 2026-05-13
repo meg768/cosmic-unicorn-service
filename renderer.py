@@ -121,6 +121,32 @@ def normalize_text(text):
     return " ".join(parts)
 
 
+def extract_global_size(text, default_font_size):
+    current_size = default_font_size
+    index = 0
+
+    while text.startswith("[size=", index):
+        close_index = text.find("]", index + 6)
+        if close_index == -1:
+            break
+
+        size_value = text[index + 6:close_index].strip()
+        if not size_value:
+            break
+
+        try:
+            current_size = clamp_int(int(size_value), MIN_FONT_SIZE, MAX_FONT_SIZE, default_font_size)
+        except Exception:
+            break
+
+        index = close_index + 1
+
+    if index == 0:
+        return text, default_font_size
+
+    return text[index:].lstrip(), current_size
+
+
 def split_graphemes(text):
     clusters = []
     current = ""
@@ -388,6 +414,7 @@ def render_banner(
     else:
         font_size = clamp_int(font_size, MIN_FONT_SIZE, MAX_FONT_SIZE, default_font_size)
 
+    text, font_size = extract_global_size(text, font_size)
     emoji_size = max(12, min(height, round(font_size * DEFAULT_EMOJI_RATIO)))
 
     font_cache = {}
