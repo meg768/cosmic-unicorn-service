@@ -121,53 +121,76 @@ def normalize_text(text):
     return " ".join(parts)
 
 
-def extract_global_directives(text, default_font_size, default_font_name, default_color):
+def extract_global_directives(text):
     if not text.startswith("["):
-        return text, default_font_size, default_font_name, default_color
+        return text, {}
 
     close_index = text.find("]")
     if close_index == -1:
-        return text, default_font_size, default_font_name, default_color
+        return text, {}
 
     directive = text[1:close_index].strip()
     if "," not in directive:
-        return text, default_font_size, default_font_name, default_color
+        return text, {}
 
-    next_font_size = default_font_size
-    next_font_name = default_font_name
-    next_color = default_color
+    overrides = {}
 
     parts = [part.strip() for part in directive.split(",") if part.strip()]
     if not parts:
-        return text, default_font_size, default_font_name, default_color
+        return text, {}
 
     for part in parts:
         if "=" not in part:
-            return text, default_font_size, default_font_name, default_color
+            return text, {}
 
         key, value = [piece.strip() for piece in part.split("=", 1)]
         key = key.lower()
 
         if key == "size":
             try:
-                next_font_size = clamp_int(int(value), MIN_FONT_SIZE, MAX_FONT_SIZE, default_font_size)
+                overrides["font_size"] = int(value)
             except Exception:
-                return text, default_font_size, default_font_name, default_color
+                return text, {}
         elif key == "font":
             try:
                 resolve_font_path(value)
             except ValueError:
-                return text, default_font_size, default_font_name, default_color
-            next_font_name = value
+                return text, {}
+            overrides["font_name"] = value
         elif key == "color":
             try:
-                next_color = parse_color_value(value)
+                overrides["text_color"] = parse_color_value(value)
             except ValueError:
-                return text, default_font_size, default_font_name, default_color
+                return text, {}
+        elif key == "background":
+            try:
+                overrides["background"] = parse_color_value(value)
+            except ValueError:
+                return text, {}
+        elif key == "height":
+            try:
+                overrides["height"] = int(value)
+            except Exception:
+                return text, {}
+        elif key == "width":
+            try:
+                overrides["width"] = int(value)
+            except Exception:
+                return text, {}
+        elif key == "padding":
+            try:
+                overrides["padding"] = int(value)
+            except Exception:
+                return text, {}
+        elif key == "gap":
+            try:
+                overrides["gap"] = int(value)
+            except Exception:
+                return text, {}
         else:
-            return text, default_font_size, default_font_name, default_color
+            return text, {}
 
-    return text[close_index + 1:].lstrip(), next_font_size, next_font_name, next_color
+    return text[close_index + 1:].lstrip(), overrides
 
 
 def split_graphemes(text):
@@ -425,6 +448,25 @@ def render_banner(
     font_size=None,
 ):
     text = normalize_text(text or DEFAULT_TEXT)
+    text, directive_overrides = extract_global_directives(text)
+
+    if "height" in directive_overrides:
+        height = directive_overrides["height"]
+    if "width" in directive_overrides:
+        width = directive_overrides["width"]
+    if "padding" in directive_overrides:
+        padding = directive_overrides["padding"]
+    if "gap" in directive_overrides:
+        gap = directive_overrides["gap"]
+    if "font_name" in directive_overrides:
+        font_name = directive_overrides["font_name"]
+    if "font_size" in directive_overrides:
+        font_size = directive_overrides["font_size"]
+    if "text_color" in directive_overrides:
+        text_color = directive_overrides["text_color"]
+    if "background" in directive_overrides:
+        background = directive_overrides["background"]
+
     height = clamp_int(height, 16, 256, DEFAULT_HEIGHT)
     width = None if width in (None, "") else clamp_int(width, 16, 4096, DEFAULT_HEIGHT)
     padding = clamp_int(padding, 0, 512, round(height * DEFAULT_PADDING_RATIO)) if padding is not None else round(height * DEFAULT_PADDING_RATIO)
@@ -436,10 +478,6 @@ def render_banner(
         font_size = default_font_size
     else:
         font_size = clamp_int(font_size, MIN_FONT_SIZE, MAX_FONT_SIZE, default_font_size)
-
-    text, font_size, font_name, text_color = extract_global_directives(
-        text, font_size, font_name, text_color
-    )
     emoji_size = max(12, min(height, round(font_size * DEFAULT_EMOJI_RATIO)))
 
     font_cache = {}
