@@ -183,6 +183,12 @@ def measure_text(draw, text, font):
     return right - left, bottom - top
 
 
+def measure_text_width(draw, text, font):
+    if not text:
+        return 0
+    return round(draw.textlength(text, font=font))
+
+
 def load_emoji_image(emoji_path, emoji_size):
     image = Image.open(emoji_path).convert("RGBA")
     return image.resize((emoji_size, emoji_size), Image.Resampling.LANCZOS)
@@ -297,7 +303,7 @@ def render_banner(
     for token in tokens:
         token_type = token[0]
         if token_type == "text":
-            token_width, _ = measure_text(draw, token[1], font)
+            token_width = measure_text_width(draw, token[1], font)
         else:
             token_width = emoji_size
         content_width += token_width
@@ -311,15 +317,14 @@ def render_banner(
     draw = ImageDraw.Draw(canvas)
 
     x = padding
+    text_center_y = height / 2
     for token in tokens:
         token_type = token[0]
         if token_type == "text":
             content = token[1]
             token_color = token[2]
-            bbox = draw.textbbox((0, 0), content, font=font)
-            y = (height - (bbox[3] - bbox[1])) // 2 - bbox[1]
-            draw.text((x, y), content, font=font, fill=token_color)
-            x += bbox[2] - bbox[0]
+            draw.text((x, text_center_y), content, font=font, fill=token_color, anchor="lm")
+            x += measure_text_width(draw, content, font)
         else:
             content = token[1]
             emoji = load_emoji_image(content, emoji_size)
