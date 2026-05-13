@@ -200,6 +200,25 @@ if WARNING_EMOJI_PATH is None:
     raise RuntimeError("Missing fallback emoji: {}".format(WARNING_EMOJI_CODE))
 
 
+def resolve_emoji_path(code):
+    emoji_path = EMOJIS.get(code)
+    if emoji_path is not None:
+        return emoji_path
+
+    if "FE0F" not in code:
+        emoji_path = EMOJIS.get(code + "-FE0F")
+        if emoji_path is not None:
+            return emoji_path
+
+    normalized = "-".join(part for part in code.split("-") if part != "FE0F")
+    if normalized != code:
+        emoji_path = EMOJIS.get(normalized)
+        if emoji_path is not None:
+            return emoji_path
+
+    return None
+
+
 def measure_text(draw, text, font):
     if not text:
         return 0, 0
@@ -277,7 +296,7 @@ def tokenize(text, default_color):
 
         for cluster in split_graphemes(segment_text):
             code = cluster_to_codepoints(cluster)
-            emoji_path = EMOJIS.get(code)
+            emoji_path = resolve_emoji_path(code)
 
             if emoji_path is not None:
                 if buffer:
