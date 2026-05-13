@@ -43,7 +43,7 @@ Existing files are always overwritten.
 - `background`: background color as CSS color name or hex like `RRGGBB`, default `000000`
 - `padding`: optional left/right padding in pixels
 - `gap`: optional gap between text and emoji in pixels
-- `font_size`: optional text size in pixels
+- `size`: optional text size in pixels
 - `font`: optional font name such as `arial-bold`, `impact`, `digital`, `gotham`, `prototype`
 
 ## Notes
