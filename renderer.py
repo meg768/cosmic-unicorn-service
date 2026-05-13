@@ -36,6 +36,8 @@ DEFAULT_PADDING_RATIO = 0.375
 DEFAULT_GAP_RATIO = 0.1
 DEFAULT_FONT_RATIO = 0.75
 DEFAULT_EMOJI_RATIO = 0.95
+MIN_FONT_SIZE = 8
+MAX_FONT_SIZE = 512
 
 ZWJ = "\u200d"
 VS16 = "\ufe0f"
@@ -210,6 +212,7 @@ def render_banner(
     padding=None,
     gap=None,
     font_name=None,
+    font_size=None,
 ):
     text = text or DEFAULT_TEXT
     height = clamp_int(height, 16, 256, DEFAULT_HEIGHT)
@@ -217,7 +220,11 @@ def render_banner(
     padding = clamp_int(padding, 0, 512, round(height * DEFAULT_PADDING_RATIO)) if padding is not None else round(height * DEFAULT_PADDING_RATIO)
     gap = clamp_int(gap, 0, 128, max(1, round(height * DEFAULT_GAP_RATIO))) if gap is not None else max(1, round(height * DEFAULT_GAP_RATIO))
 
-    font_size = max(12, round(height * DEFAULT_FONT_RATIO))
+    if font_size is None:
+        font_size = max(12, round(height * DEFAULT_FONT_RATIO))
+    else:
+        font_size = clamp_int(font_size, MIN_FONT_SIZE, MAX_FONT_SIZE, max(12, round(height * DEFAULT_FONT_RATIO)))
+
     emoji_size = max(12, min(height - 4, round(font_size * DEFAULT_EMOJI_RATIO)))
 
     font = ImageFont.truetype(str(resolve_font_path(font_name)), size=font_size)
