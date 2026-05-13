@@ -34,7 +34,7 @@ DEFAULT_TEXT_COLOR = (255, 0, 0)
 DEFAULT_BACKGROUND = (0, 0, 0)
 DEFAULT_PADDING_RATIO = 0.375
 DEFAULT_GAP_RATIO = 0.1
-DEFAULT_FONT_RATIO = 0.75
+DEFAULT_FONT_RATIO = 18 / 32
 DEFAULT_EMOJI_RATIO = 1.5
 MIN_FONT_SIZE = 8
 MAX_FONT_SIZE = 512
@@ -86,6 +86,10 @@ def resolve_font_path(font_name):
         raise ValueError(f"Unknown font '{font_name}'. Supported fonts: {supported}")
 
     return BASE_DIR / "fonts" / filename
+
+
+def default_font_size_for_height(height):
+    return max(12, round(height * DEFAULT_FONT_RATIO))
 
 
 def split_graphemes(text):
@@ -220,10 +224,12 @@ def render_banner(
     padding = clamp_int(padding, 0, 512, round(height * DEFAULT_PADDING_RATIO)) if padding is not None else round(height * DEFAULT_PADDING_RATIO)
     gap = clamp_int(gap, 0, 128, max(1, round(height * DEFAULT_GAP_RATIO))) if gap is not None else max(1, round(height * DEFAULT_GAP_RATIO))
 
+    default_font_size = default_font_size_for_height(height)
+
     if font_size is None:
-        font_size = max(12, round(height * DEFAULT_FONT_RATIO))
+        font_size = default_font_size
     else:
-        font_size = clamp_int(font_size, MIN_FONT_SIZE, MAX_FONT_SIZE, max(12, round(height * DEFAULT_FONT_RATIO)))
+        font_size = clamp_int(font_size, MIN_FONT_SIZE, MAX_FONT_SIZE, default_font_size)
 
     emoji_size = max(12, min(height, round(font_size * DEFAULT_EMOJI_RATIO)))
 
