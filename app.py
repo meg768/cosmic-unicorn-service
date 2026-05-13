@@ -20,7 +20,7 @@ def make_header_safe(value):
 def render_png():
     try:
         image, unsupported = render_banner(
-            text=request.args.get("text", "Ticker"),
+            text=request.args.get("text", "Banner"),
             width=request.args.get("width"),
             height=request.args.get("height", 32),
             padding=request.args.get("padding"),

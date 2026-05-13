@@ -27,7 +27,7 @@ FONT_ALIASES = {
     "verdana-bold": "verdana-bold.ttf",
 }
 
-DEFAULT_TEXT = "Ticker"
+DEFAULT_TEXT = "Banner"
 DEFAULT_HEIGHT = 32
 DEFAULT_WIDTH = None
 DEFAULT_TEXT_COLOR = (255, 0, 0)

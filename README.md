@@ -1,6 +1,6 @@
-# ticker
+# Banner
 
-`ticker` has one job: return a PNG in ticker style from query parameters.
+`banner` has one job: return a PNG banner from query parameters.
 
 ## Install
 
@@ -13,7 +13,7 @@ pip install -r requirements.txt
 ## Run
 
 ```bash
-python3 app.py
+.venv/bin/gunicorn --bind 127.0.0.1:3005 app:app
 ```
 
 Then open:
@@ -51,4 +51,4 @@ Existing files are always overwritten.
 - Emoji PNG files live in `emojis/`.
 - Font files live in `fonts/`.
 - Available fonts: `arial`, `arial-bold`, `arial-black`, `arial-rounded`, `calibri`, `century-gothic`, `century-gothic-italic`, `digital`, `djb-digital`, `gotham`, `impact`, `prototype`, `roboto`, `tahoma`, `verdana`, `verdana-bold`
-- Unsupported emoji are left as text and reported in the `X-Unsupported-Emoji` response header.
+- Unsupported emoji render as `⚠️` and are also reported in the `X-Unsupported-Emoji` response header.
