@@ -5,22 +5,18 @@
 
 ROUND_FACE_SMILEYS = (
     "😀😃😄😁😆😅😂🤣😊😇🙂🙃😉😌😍🥰😘😗😙😚"
-    "😋😛😜🤪😝🫠🤗🤭🫢🫣🤫🫡🤔🫨🤐🤨🧐🤓😎🥸"
+    "😋😛😜🤪😝🫠🤗🤭🫢🫣🤫🫡🤔🫨🤐🤨🧐🤓😎🤠🥸"
     "🤩🥳😏😒😞😔😟😕🙁☹️😣😖😫😩🥺🥹😢😭😤😠😡🤬"
     "😳🥵🥶😱😨😰😥😓😶🫥😐🫤😑🙄😬😮‍💨🤥"
     "😴🤤😪😵😵‍💫🤯🥴🤢🤮🤧😷🤒🤕🤑"
 )
 
 SMILEYS_AND_PEOPLE = (
-    ROUND_FACE_SMILEYS
-    + "☺️🥲🙂‍↔️🙂‍↕️😈💀🤡👻🤖"
+    "☺️🥲🙂‍↔️🙂‍↕️😈💀🤡👻🤖"
     "👋🫰🫵👍👏🫶🙏💪🫀👀🫦🤦‍♀️🗣️🫂"
 )
 
-HEARTS_AND_EMOTION = (
-    "💔❤️‍🔥❤️‍🩹❤️🩷💚💙🩵💜🖤🩶🤍"
-    "💯💥💬"
-)
+HEARTS_AND_EMOTION = "💔❤️‍🔥❤️‍🩹❤️🩷💚💙🩵💜🖤🩶🤍💯💥💬"
 
 FRUITS_AND_BERRIES = "🍎🍏🍐🍊🍋🍋‍🟩🍌🍉🍇🍓🫐🍒🍑🥭🍍🥝🥥"
 
@@ -28,17 +24,27 @@ VEGETABLES = "🥑🍅🫒🥕🌽🌶️🫑🥒🥬🥦🧄🧅🍄🥔🫘"
 
 CAKES_AND_SWEETS = "🎂🧁🍰🥧🍪🍩🍫🍬🍭"
 
-FOOD_AND_DRINK = FRUITS_AND_BERRIES + VEGETABLES + CAKES_AND_SWEETS + "☕"
+FOOD_AND_DRINK = "🍔🍟🍕🌭🥪🌮🌯🍜🍣🍺🍷🥤☕"
 
 SPORTS = "⚽🏀🏈⚾🎾🏐🏉🥏🎱🏓🏸🥊🥋⛳🏒🏑🥍🏏🛹⛷️🏂🏋️‍♀️🤺"
 
-ACTIVITY = SPORTS + "🎉🎀🏆🎮"
+PARTY = "🎉🎊🎈🎁🍾🥂🪩🕺💃🎇🎆"
+
+ACTIVITY = "🎀🏆🎮"
 
 WEATHER = "☀️🌤️⛅🌥️☁️🌦️🌧️⛈️🌩️🌨️❄️🌪️🌫️🌈☔🌙🌛🌜🌝🌞"
 
-TRAVEL_AND_PLACES = WEATHER + "🏠✈️🚀"
+ANIMALS_AND_NATURE = "🐶🐱🦊🐻🐼🐸🐦🌲🌳🌵🌸🍀"
+
+TRAVEL_AND_PLACES = "🏠✈️🚀"
+
+VEHICLES = "🚗🚕🚌🚓🚑🚒🚲🛴🚂🚁⛵"
 
 OBJECTS = "👑💎📢🎶📱📞💡📚🗓️📈📍🪬🗿"
+
+MONEY_AND_SHOPPING = "💰💵💶💳🛒🏷️"
+
+TIME_AND_CALENDAR = "⌚⏰⏳📅🕒"
 
 SYMBOLS = "⭐⚡🔥✨⚠️🔞➡️⬇️‼️❗✅✔️❌🚩"
 
@@ -46,12 +52,23 @@ FLAGS = "🇦🇺🇨🇦🇬🇧🇮🇳🇵🇭🇺🇸"
 
 EMOJIS = "".join(
     (
+        ROUND_FACE_SMILEYS,
         SMILEYS_AND_PEOPLE,
         HEARTS_AND_EMOTION,
+        FRUITS_AND_BERRIES,
+        VEGETABLES,
+        CAKES_AND_SWEETS,
         FOOD_AND_DRINK,
+        SPORTS,
+        PARTY,
         ACTIVITY,
+        WEATHER,
+        ANIMALS_AND_NATURE,
         TRAVEL_AND_PLACES,
+        VEHICLES,
         OBJECTS,
+        MONEY_AND_SHOPPING,
+        TIME_AND_CALENDAR,
         SYMBOLS,
         FLAGS,
     )
