@@ -527,11 +527,16 @@ def render_banner(
     tokens, unsupported = tokenize(text, text_color, font_name)
 
     content_width = 0
+    max_text_ascent = 0
+    max_text_descent = 0
     for token in tokens:
         token_type = token[0]
         if token_type == "text":
             token_font = get_font(token[3])
             token_width = measure_text_width(draw, token[1], token_font)
+            token_ascent, token_descent = token_font.getmetrics()
+            max_text_ascent = max(max_text_ascent, token_ascent)
+            max_text_descent = max(max_text_descent, token_descent)
         else:
             token_width = emoji_size
         content_width += token_width
@@ -545,14 +550,15 @@ def render_banner(
     draw = ImageDraw.Draw(canvas)
 
     x = padding
-    text_center_y = height / 2
+    line_height = max_text_ascent + max_text_descent
+    baseline_y = round((height - line_height) / 2 + max_text_ascent) if line_height else round(height / 2)
     for token in tokens:
         token_type = token[0]
         if token_type == "text":
             content = token[1]
             token_color = token[2]
             token_font = get_font(token[3])
-            draw.text((x, text_center_y), content, font=token_font, fill=token_color, anchor="lm")
+            draw.text((x, baseline_y), content, font=token_font, fill=token_color, anchor="ls")
             x += measure_text_width(draw, content, token_font)
         else:
             content = token[1]
