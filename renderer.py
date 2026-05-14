@@ -36,6 +36,7 @@ DEFAULT_PADDING_RATIO = 0.375
 DEFAULT_GAP_RATIO = 0.1
 DEFAULT_FONT_RATIO = 18 / 32
 DEFAULT_EMOJI_RATIO = 1.5
+DEFAULT_EMOJI_ASCENT_RATIO = 0.85
 MIN_FONT_SIZE = 8
 MAX_FONT_SIZE = 512
 
@@ -529,6 +530,10 @@ def render_banner(
     content_width = 0
     max_text_ascent = 0
     max_text_descent = 0
+    emoji_ascent = round(emoji_size * DEFAULT_EMOJI_ASCENT_RATIO)
+    emoji_descent = emoji_size - emoji_ascent
+    max_line_ascent = 0
+    max_line_descent = 0
     for token in tokens:
         token_type = token[0]
         if token_type == "text":
@@ -537,8 +542,12 @@ def render_banner(
             token_ascent, token_descent = token_font.getmetrics()
             max_text_ascent = max(max_text_ascent, token_ascent)
             max_text_descent = max(max_text_descent, token_descent)
+            max_line_ascent = max(max_line_ascent, token_ascent)
+            max_line_descent = max(max_line_descent, token_descent)
         else:
             token_width = emoji_size
+            max_line_ascent = max(max_line_ascent, emoji_ascent)
+            max_line_descent = max(max_line_descent, emoji_descent)
         content_width += token_width
         content_width += gap
 
@@ -550,8 +559,8 @@ def render_banner(
     draw = ImageDraw.Draw(canvas)
 
     x = padding
-    line_height = max_text_ascent + max_text_descent
-    baseline_y = round((height - line_height) / 2 + max_text_ascent) if line_height else round(height / 2)
+    line_height = max_line_ascent + max_line_descent
+    baseline_y = round((height - line_height) / 2 + max_line_ascent) if line_height else round(height / 2)
     for token in tokens:
         token_type = token[0]
         if token_type == "text":
@@ -563,7 +572,7 @@ def render_banner(
         else:
             content = token[1]
             emoji = load_emoji_image(content, emoji_size)
-            y = (height - emoji.height) // 2
+            y = baseline_y - emoji_ascent
             canvas.alpha_composite(emoji, (x, y))
             x += emoji.width
         x += gap
