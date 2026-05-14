@@ -122,75 +122,98 @@ def normalize_text(text):
 
 
 def extract_global_directives(text):
-    if not text.startswith("["):
-        return text, {}
-
-    close_index = text.find("]")
-    if close_index == -1:
-        return text, {}
-
-    directive = text[1:close_index].strip()
-    if "," not in directive:
-        return text, {}
-
     overrides = {}
+    index = 0
+    consumed_any = False
 
-    parts = [part.strip() for part in directive.split(",") if part.strip()]
-    if not parts:
+    while text.startswith("[", index):
+        close_index = text.find("]", index + 1)
+        if close_index == -1:
+            break
+
+        directive = text[index + 1:close_index].strip()
+        if not directive or directive.startswith("/"):
+            break
+
+        parts = [part.strip() for part in directive.split(",") if part.strip()]
+        if not parts:
+            break
+
+        next_overrides = {}
+        valid = True
+
+        for part in parts:
+            if "=" not in part:
+                valid = False
+                break
+
+            key, value = [piece.strip() for piece in part.split("=", 1)]
+            key = key.lower()
+
+            if key == "size":
+                try:
+                    next_overrides["font_size"] = int(value)
+                except Exception:
+                    valid = False
+                    break
+            elif key == "font":
+                try:
+                    resolve_font_path(value)
+                except ValueError:
+                    valid = False
+                    break
+                next_overrides["font_name"] = value
+            elif key == "color":
+                try:
+                    next_overrides["text_color"] = parse_color_value(value)
+                except ValueError:
+                    valid = False
+                    break
+            elif key == "background":
+                try:
+                    next_overrides["background"] = parse_color_value(value)
+                except ValueError:
+                    valid = False
+                    break
+            elif key == "height":
+                try:
+                    next_overrides["height"] = int(value)
+                except Exception:
+                    valid = False
+                    break
+            elif key == "width":
+                try:
+                    next_overrides["width"] = int(value)
+                except Exception:
+                    valid = False
+                    break
+            elif key == "padding":
+                try:
+                    next_overrides["padding"] = int(value)
+                except Exception:
+                    valid = False
+                    break
+            elif key == "gap":
+                try:
+                    next_overrides["gap"] = int(value)
+                except Exception:
+                    valid = False
+                    break
+            else:
+                valid = False
+                break
+
+        if not valid:
+            break
+
+        overrides.update(next_overrides)
+        consumed_any = True
+        index = close_index + 1
+
+    if not consumed_any:
         return text, {}
 
-    for part in parts:
-        if "=" not in part:
-            return text, {}
-
-        key, value = [piece.strip() for piece in part.split("=", 1)]
-        key = key.lower()
-
-        if key == "size":
-            try:
-                overrides["font_size"] = int(value)
-            except Exception:
-                return text, {}
-        elif key == "font":
-            try:
-                resolve_font_path(value)
-            except ValueError:
-                return text, {}
-            overrides["font_name"] = value
-        elif key == "color":
-            try:
-                overrides["text_color"] = parse_color_value(value)
-            except ValueError:
-                return text, {}
-        elif key == "background":
-            try:
-                overrides["background"] = parse_color_value(value)
-            except ValueError:
-                return text, {}
-        elif key == "height":
-            try:
-                overrides["height"] = int(value)
-            except Exception:
-                return text, {}
-        elif key == "width":
-            try:
-                overrides["width"] = int(value)
-            except Exception:
-                return text, {}
-        elif key == "padding":
-            try:
-                overrides["padding"] = int(value)
-            except Exception:
-                return text, {}
-        elif key == "gap":
-            try:
-                overrides["gap"] = int(value)
-            except Exception:
-                return text, {}
-        else:
-            return text, {}
-
-    return text[close_index + 1:].lstrip(), overrides
+    return text[index:].lstrip(), overrides
 
 
 def split_graphemes(text):
