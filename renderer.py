@@ -565,23 +565,23 @@ def render_banner(
 
     tokens, unsupported = tokenize(text, text_color, font_name, font_size, emoji_size)
 
+    token_layouts = []
     content_width = 0
-    max_line_ascent = 0
-    max_line_descent = 0
+    max_above_bottom = 0
     for token in tokens:
         token_type = token[0]
         if token_type == "text":
             token_font = get_font(token[3], token[4])
             token_width = measure_text_width(draw, token[1], token_font)
-            token_ascent, token_descent = token_font.getmetrics()
-            max_line_ascent = max(max_line_ascent, token_ascent)
-            max_line_descent = max(max_line_descent, token_descent)
+            token_bbox = draw.textbbox((0, 0), token[1], font=token_font, anchor="ls")
+            token_bottom = token_bbox[3]
+            token_height = token_bbox[3] - token_bbox[1]
+            max_above_bottom = max(max_above_bottom, token_height)
+            token_layouts.append((token, token_width, token_bottom))
         else:
             token_width = token[2]
-            emoji_ascent = round(token[2] * DEFAULT_EMOJI_ASCENT_RATIO)
-            emoji_descent = token[2] - emoji_ascent
-            max_line_ascent = max(max_line_ascent, emoji_ascent)
-            max_line_descent = max(max_line_descent, emoji_descent)
+            max_above_bottom = max(max_above_bottom, token[2])
+            token_layouts.append((token, token_width, 0))
         content_width += token_width
         content_width += gap
 
@@ -593,22 +593,21 @@ def render_banner(
     draw = ImageDraw.Draw(canvas)
 
     x = padding
-    line_height = max_line_ascent + max_line_descent
-    baseline_y = round((height - line_height) / 2 + max_line_ascent) if line_height else round(height / 2)
-    for token in tokens:
+    content_bottom_y = round((height + max_above_bottom) / 2) if max_above_bottom else round(height / 2)
+    for token, _, token_bottom in token_layouts:
         token_type = token[0]
         if token_type == "text":
             content = token[1]
             token_color = token[2]
             token_font = get_font(token[3], token[4])
+            baseline_y = content_bottom_y - token_bottom
             draw.text((x, baseline_y), content, font=token_font, fill=token_color, anchor="ls")
             x += measure_text_width(draw, content, token_font)
         else:
             content = token[1]
             emoji_size = token[2]
             emoji = load_emoji_image(content, emoji_size)
-            emoji_ascent = round(emoji_size * DEFAULT_EMOJI_ASCENT_RATIO)
-            y = baseline_y - emoji_ascent
+            y = content_bottom_y - emoji_size
             canvas.alpha_composite(emoji, (x, y))
             x += emoji.width
         x += gap
