@@ -50,6 +50,7 @@ Existing files are always overwritten.
 ## Notes
 
 - Style is fixed to a red ticker look; the default PNG background is transparent unless a `background` is provided.
+- All text segments share one common baseline, even if inline `font` or `size` changes are used. Emojis are placed between text segments but do not change the text baseline.
 - Emoji PNG files live in `emojis/`.
 - Font files live in `fonts/`.
 - Available fonts: `arial`, `arial-bold`, `arial-black`, `arial-rounded`, `calibri`, `century-gothic`, `century-gothic-italic`, `digital`, `djb-digital`, `gotham`, `impact`, `prototype`, `roboto`, `tahoma`, `verdana`, `verdana-bold`

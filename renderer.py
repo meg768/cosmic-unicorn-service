@@ -36,7 +36,6 @@ DEFAULT_PADDING_RATIO = 0.375
 DEFAULT_GAP_RATIO = 0.1
 DEFAULT_FONT_RATIO = 18 / 32
 DEFAULT_EMOJI_RATIO = 1.5
-DEFAULT_EMOJI_ASCENT_RATIO = 0.85
 MIN_FONT_SIZE = 8
 MAX_FONT_SIZE = 512
 
@@ -334,13 +333,6 @@ def resolve_emoji_path(code):
             return emoji_path
 
     return None
-
-
-def measure_text(draw, text, font):
-    if not text:
-        return 0, 0
-    left, top, right, bottom = draw.textbbox((0, 0), text, font=font)
-    return right - left, bottom - top
 
 
 def measure_text_width(draw, text, font):
