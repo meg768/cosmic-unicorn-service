@@ -1,19 +1,16 @@
-# Based on EmojiTerra Top 100, checked on 2026-05-13:
-# https://emojiterra.com/top-100/
-
 # Mac-style grouping for easier editing.
 
 ROUND_FACE_SMILEYS = (
     "😀😃😄😁😆😅😂🤣😊😇🙂🙃😉😌😍🥰😘😗😙😚"
     "😋😛😜🤪😝🫠🤗🤭🫢🫣🤫🫡🤔🫨🤐🤨🧐🤓😎🤠🥸"
     "🤩🥳😏😒😞😔😟😕🙁☹️😣😖😫😩🥺🥹😢😭😤😠😡🤬"
-    "😳🥵🥶😱😨😰😥😓😶🫥😐🫤😑🙄😬😮‍💨🤥"
+    "😳🥵🥶😱😨😰😥😓😶🫥😐🫤😑🙄😬😮😯😲😦😧🥱😮‍💨🤥"
     "😴🤤😪😵😵‍💫🤯🥴🤢🤮🤧😷🤒🤕🤑"
 )
 
 SMILEYS_AND_PEOPLE = (
     "☺️🥲🙂‍↔️🙂‍↕️😈💀🤡👻🤖"
-    "👋🫰🫵👍👏🫶🙏💪🫀👀🫦🤦‍♀️🗣️🫂"
+    "👋🫰🫵👍👏🙌👌✌️🤞🤝🫶🙏💪🫀👀🫦🤦‍♀️🤷‍♀️🤷‍♂️🗣️🫂"
 )
 
 HEARTS_AND_EMOTION = "💔❤️‍🔥❤️‍🩹❤️🩷💚💙🩵💜🖤🩶🤍💯💥💬"
