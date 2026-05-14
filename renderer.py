@@ -31,7 +31,7 @@ DEFAULT_TEXT = "Banner"
 DEFAULT_HEIGHT = 32
 DEFAULT_WIDTH = None
 DEFAULT_TEXT_COLOR = (255, 0, 0)
-DEFAULT_BACKGROUND = (0, 0, 0)
+DEFAULT_BACKGROUND = (0, 0, 0, 0)
 DEFAULT_PADDING_RATIO = 0.375
 DEFAULT_GAP_RATIO = 0.1
 DEFAULT_FONT_RATIO = 18 / 32
@@ -78,6 +78,9 @@ def parse_color_value(value):
     if not value:
         raise ValueError("Color must use CSS color names or hex like RRGGBB")
 
+    if value.lower() == "transparent":
+        return (0, 0, 0, 0)
+
     if not value.startswith("#") and len(value) in (3, 6):
         hex_chars = "0123456789abcdefABCDEF"
         if all(char in hex_chars for char in value):
@@ -89,6 +92,12 @@ def parse_color_value(value):
         raise ValueError("Color must use CSS color names or hex like RRGGBB")
 
     return color[:3]
+
+
+def background_to_rgba(color):
+    if len(color) == 4:
+        return color
+    return color + (255,)
 
 
 def resolve_font_path(font_name):
@@ -511,7 +520,8 @@ def render_banner(
             font_cache[key] = ImageFont.truetype(str(resolve_font_path(name)), size=font_size)
         return font_cache[key]
 
-    probe = Image.new("RGBA", (1, 1), background + (255,))
+    background_rgba = background_to_rgba(background)
+    probe = Image.new("RGBA", (1, 1), background_rgba)
     draw = ImageDraw.Draw(probe)
 
     tokens, unsupported = tokenize(text, text_color, font_name)
@@ -531,7 +541,7 @@ def render_banner(
         content_width -= gap
 
     canvas_width = max(width or 0, content_width + padding * 2, height)
-    canvas = Image.new("RGBA", (canvas_width, height), background + (255,))
+    canvas = Image.new("RGBA", (canvas_width, height), background_rgba)
     draw = ImageDraw.Draw(canvas)
 
     x = padding
@@ -552,4 +562,4 @@ def render_banner(
             x += emoji.width
         x += gap
 
-    return canvas.convert("RGB"), unsupported
+    return canvas, unsupported

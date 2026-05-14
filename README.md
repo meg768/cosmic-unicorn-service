@@ -41,7 +41,7 @@ Existing files are always overwritten.
 - `height`: output height in pixels, default `32`
 - `width`: optional minimum width in pixels
 - `color`: text color as CSS color name or hex like `RRGGBB`, default `FF0000`
-- `background`: background color as CSS color name or hex like `RRGGBB`, default `000000`
+- `background`: background color as CSS color name, `transparent`, or hex like `RRGGBB`; when omitted the PNG background is transparent
 - `padding`: optional left/right padding in pixels
 - `gap`: optional gap between text and emoji in pixels
 - `size`: optional text size in pixels
@@ -49,7 +49,7 @@ Existing files are always overwritten.
 
 ## Notes
 
-- Style is fixed to a red-on-black ticker look.
+- Style is fixed to a red ticker look; the default PNG background is transparent unless a `background` is provided.
 - Emoji PNG files live in `emojis/`.
 - Font files live in `fonts/`.
 - Available fonts: `arial`, `arial-bold`, `arial-black`, `arial-rounded`, `calibri`, `century-gothic`, `century-gothic-italic`, `digital`, `djb-digital`, `gotham`, `impact`, `prototype`, `roboto`, `tahoma`, `verdana`, `verdana-bold`
