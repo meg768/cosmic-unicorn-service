@@ -7,7 +7,7 @@ from renderer import DEFAULT_BACKGROUND, DEFAULT_TEXT_COLOR, parse_hex_color, re
 
 
 app = Flask(__name__)
-SUPPORTED_FORMATS = ("png", "bmp")
+SUPPORTED_FORMATS = ("png", "bmp", "bmp24")
 
 
 def bad_request(message):
@@ -38,6 +38,12 @@ def image_to_response_bytes(image, output_format):
         background.alpha_composite(image)
         paletted = background.convert("RGB").convert("P", palette="ADAPTIVE", colors=256)
         paletted.save(buffer, format="BMP")
+        return buffer.getvalue(), "image/bmp"
+
+    if output_format == "bmp24":
+        background = Image.new("RGBA", image.size, (0, 0, 0, 255))
+        background.alpha_composite(image)
+        background.convert("RGB").save(buffer, format="BMP")
         return buffer.getvalue(), "image/bmp"
 
     image.save(buffer, format="PNG")
