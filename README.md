@@ -22,7 +22,6 @@ Then open:
 http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32
 http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&font=impact
 http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&format=bmp
-http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&format=bmp24
 ```
 
 ## Build Emojis
@@ -48,12 +47,12 @@ Existing files are always overwritten.
 - `gap`: optional gap between text and emoji in pixels
 - `size`: optional text size in pixels
 - `font`: optional font name such as `arial-bold`, `impact`, `digital`, `gotham`, `prototype`
-- `format`: output image format, either `png`, `bmp`, or `bmp24`, default `png`
+- `format`: output image format, either `png` or `bmp`, default `png`
 
 ## Notes
 
 - Style is fixed to a red ticker look; the default PNG background is transparent unless a `background` is provided.
-- BMP output uses transparent pixels flattened onto black. `format=bmp` returns an 8-bit paletted BMP, while `format=bmp24` returns a 24-bit RGB BMP for better emoji color quality.
+- BMP output is a 24-bit RGB `image/bmp` with transparent pixels flattened onto black.
 - All text segments share one common baseline, even if inline `font` or `size` changes are used. Emojis are placed between text segments but do not change the text baseline.
 - Emoji PNG files live in `emojis/`.
 - Font files live in `fonts/`.
