@@ -1,6 +1,6 @@
 # Banner
 
-`banner` has one job: return a PNG banner from query parameters.
+`banner` has one job: return a banner image from query parameters.
 
 ## Install
 
@@ -21,6 +21,7 @@ Then open:
 ```text
 http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32
 http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&font=impact
+http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&format=bmp
 ```
 
 ## Build Emojis
@@ -46,10 +47,12 @@ Existing files are always overwritten.
 - `gap`: optional gap between text and emoji in pixels
 - `size`: optional text size in pixels
 - `font`: optional font name such as `arial-bold`, `impact`, `digital`, `gotham`, `prototype`
+- `format`: output image format, either `png` or `bmp`, default `png`
 
 ## Notes
 
 - Style is fixed to a red ticker look; the default PNG background is transparent unless a `background` is provided.
+- BMP output is an 8-bit paletted `image/bmp` with transparent pixels flattened onto black, which makes it easier for small display clients to decode than PNG while still being readable in browsers.
 - All text segments share one common baseline, even if inline `font` or `size` changes are used. Emojis are placed between text segments but do not change the text baseline.
 - Emoji PNG files live in `emojis/`.
 - Font files live in `fonts/`.
