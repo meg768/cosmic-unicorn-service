@@ -1,6 +1,11 @@
 # Banner
 
-`banner` has one job: return a banner image from query parameters.
+`banner` is a small rendering service for Cosmic Unicorn displays.
+
+It can return:
+
+- text banners as PNG or 24-bit BMP
+- 32 x 32 animations as CUF files
 
 ## Install
 
@@ -22,6 +27,8 @@ Then open:
 http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32
 http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&font=impact
 http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&format=bmp
+http://127.0.0.1:8000/animation?name=tree
+http://127.0.0.1:8000/animation?name=random.cuf
 ```
 
 ## Build Emojis
@@ -34,6 +41,20 @@ python3 generate-emojis.py
 
 Edit the `EMOJIS` constant in `emojis.py` and run the script again. It writes files such as `emojis/1f973.png` and `emojis/1f575-1f3fb.png`.
 Existing files are always overwritten.
+
+## Build Animations
+
+Generate CUF animation files from GIF files before deploying:
+
+```bash
+python3 generate-cufs.py
+```
+
+Source GIF files live in `gifs/`.
+
+Generated CUF files live in `cufs/`.
+
+Existing `.cuf` files are deleted before new files are generated.
 
 ## Parameters
 
@@ -48,6 +69,33 @@ Existing files are always overwritten.
 - `size`: optional text size in pixels
 - `font`: optional font name such as `arial-bold`, `impact`, `digital`, `gotham`, `prototype`
 - `format`: output image format, either `png` or `bmp`, default `png`
+
+## Animations
+
+Animation CUF files live in `cufs/`.
+
+The animation endpoint is:
+
+```text
+/animation?name=tree
+```
+
+The `name` parameter can be:
+
+- a GIF/CUF base name, such as `tree`
+- a CUF filename, such as `tree.cuf`
+- omitted, `random`, or `random.cuf` for a random animation
+
+Examples:
+
+```text
+/animation
+/animation?name=random.cuf
+/animation?name=fireplace
+/animation?name=fireplace.cuf
+```
+
+The service never generates CUF files while handling requests. Run `python3 generate-cufs.py` before deploying when GIF files have changed.
 
 ## Notes
 
