@@ -4,7 +4,8 @@ import random
 
 ROOT_DIR = Path(__file__).resolve().parent
 CUF_DIR = ROOT_DIR / "cufs"
-RESERVED_RANDOM_NAMES = ("", "random", "random.cuf")
+GIF_DIR = ROOT_DIR / "gifs"
+RESERVED_RANDOM_NAMES = ("", "random", "random.cuf", "random.gif")
 
 
 def clean_animation_name(value):
@@ -52,5 +53,17 @@ def resolve_animation(name):
     cuf_path = CUF_DIR / (animation_name + ".cuf")
     if cuf_path.exists():
         return animation_name, cuf_path
+
+    raise FileNotFoundError("Animation not found: {}".format(animation_name))
+
+
+def resolve_gif_animation(name):
+    animation_name = clean_animation_name(name)
+    if animation_name == "random.cuf":
+        animation_name = choose_animation_name()
+
+    gif_path = GIF_DIR / (animation_name + ".gif")
+    if gif_path.exists():
+        return animation_name, gif_path
 
     raise FileNotFoundError("Animation not found: {}".format(animation_name))

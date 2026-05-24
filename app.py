@@ -3,7 +3,7 @@ from io import BytesIO
 from flask import Flask, Response, request
 from PIL import Image
 
-from animation import resolve_animation
+from animation import resolve_animation, resolve_gif_animation
 from renderer import DEFAULT_BACKGROUND, DEFAULT_TEXT_COLOR, parse_hex_color, render_banner
 
 
@@ -85,6 +85,22 @@ def render_animation():
     response = Response(cuf_path.read_bytes(), mimetype="application/octet-stream")
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
     response.headers["Content-Disposition"] = "inline; filename=\"{}.cuf\"".format(make_header_safe(animation_name))
+    response.headers["X-Animation-Name"] = make_header_safe(animation_name)
+    return response
+
+
+@app.get("/animation.gif")
+def render_animation_gif():
+    try:
+        animation_name, gif_path = resolve_gif_animation(request.args.get("name"))
+    except ValueError as error:
+        return bad_request(str(error))
+    except FileNotFoundError as error:
+        return Response(str(error), status=404, mimetype="text/plain; charset=utf-8")
+
+    response = Response(gif_path.read_bytes(), mimetype="image/gif")
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Content-Disposition"] = "inline; filename=\"{}.gif\"".format(make_header_safe(animation_name))
     response.headers["X-Animation-Name"] = make_header_safe(animation_name)
     return response
 

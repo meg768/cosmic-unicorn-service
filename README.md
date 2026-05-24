@@ -29,6 +29,7 @@ http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&font=
 http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&format=bmp
 http://127.0.0.1:8000/animation?name=tree
 http://127.0.0.1:8000/animation?name=random.cuf
+http://127.0.0.1:8000/animation.gif?name=tree
 ```
 
 ## Build Emojis
@@ -73,18 +74,26 @@ Existing `.cuf` files are deleted before new files are generated.
 ## Animations
 
 Animation CUF files live in `cufs/`.
+Source GIF files live in `gifs/`.
 
-The animation endpoint is:
+The Cosmic Unicorn animation endpoint is:
 
 ```text
 /animation?name=tree
+```
+
+The browser preview endpoint is:
+
+```text
+/animation.gif?name=tree
 ```
 
 The `name` parameter can be:
 
 - a GIF/CUF base name, such as `tree`
 - a CUF filename, such as `tree.cuf`
-- omitted, `random`, or `random.cuf` for a random animation
+- a GIF filename, such as `tree.gif`
+- omitted, `random`, `random.cuf`, or `random.gif` for a random animation
 
 Examples:
 
@@ -93,6 +102,9 @@ Examples:
 /animation?name=random.cuf
 /animation?name=fireplace
 /animation?name=fireplace.cuf
+/animation.gif
+/animation.gif?name=random.gif
+/animation.gif?name=fireplace
 ```
 
 The service never generates CUF files while handling requests. Run `python3 generate-cufs.py` before deploying when GIF files have changed.
