@@ -105,9 +105,6 @@ Examples:
 /animation?name=fireplace
 /animation?name=fireplace&format=cuf
 /animation?name=fireplace.cuf&format=cuf
-/animation.gif
-/animation.gif?name=random.gif
-/animation.gif?name=fireplace
 ```
 
 The service never generates CUF files while handling requests. Run `python3 generate-cufs.py` before deploying when GIF files have changed.
