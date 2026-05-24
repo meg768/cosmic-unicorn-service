@@ -1,6 +1,6 @@
-# Banner
+# cosmic-unicorn-service
 
-`banner` is a small rendering service for Cosmic Unicorn displays.
+`cosmic-unicorn-service` is a small rendering service for Cosmic Unicorn displays.
 
 It can return:
 
