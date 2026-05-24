@@ -5,16 +5,15 @@ import random
 ROOT_DIR = Path(__file__).resolve().parent
 CUF_DIR = ROOT_DIR / "cufs"
 GIF_DIR = ROOT_DIR / "gifs"
-RESERVED_RANDOM_NAMES = ("", "random", "random.cuf", "random.gif")
 
 
 def clean_animation_name(value):
     if value is None:
-        return "random.cuf"
+        return None
 
     name = value.strip().lower()
-    if name in RESERVED_RANDOM_NAMES:
-        return "random.cuf"
+    if not name:
+        return None
 
     if "/" in name or "\\" in name:
         raise ValueError("Animation name must not contain path separators")
@@ -23,9 +22,6 @@ def clean_animation_name(value):
         name = name[:-4]
     elif name.endswith(".cuf"):
         name = name[:-4]
-
-    if not name:
-        return "random.cuf"
 
     return name
 
@@ -47,7 +43,7 @@ def choose_animation_name():
 
 def resolve_animation(name):
     animation_name = clean_animation_name(name)
-    if animation_name == "random.cuf":
+    if animation_name is None:
         animation_name = choose_animation_name()
 
     cuf_path = CUF_DIR / (animation_name + ".cuf")
@@ -59,7 +55,7 @@ def resolve_animation(name):
 
 def resolve_gif_animation(name):
     animation_name = clean_animation_name(name)
-    if animation_name == "random.cuf":
+    if animation_name is None:
         animation_name = choose_animation_name()
 
     gif_path = GIF_DIR / (animation_name + ".gif")

@@ -29,7 +29,7 @@ http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&font=
 http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&format=bmp
 http://127.0.0.1:8000/animation?name=tree
 http://127.0.0.1:8000/animation?name=tree&format=cuf
-http://127.0.0.1:8000/animation?name=random
+http://127.0.0.1:8000/animation
 ```
 
 ## Build Emojis
@@ -95,13 +95,12 @@ The `name` parameter can be:
 - a GIF/CUF base name, such as `tree`
 - a CUF filename, such as `tree.cuf`
 - a GIF filename, such as `tree.gif`
-- omitted, `random`, `random.cuf`, or `random.gif` for a random animation
+- omitted for a random animation
 
 Examples:
 
 ```text
 /animation
-/animation?name=random
 /animation?name=fireplace
 /animation?name=fireplace&format=cuf
 /animation?name=fireplace.cuf&format=cuf
