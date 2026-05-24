@@ -28,8 +28,8 @@ http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32
 http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&font=impact
 http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&format=bmp
 http://127.0.0.1:8000/animation?name=tree
-http://127.0.0.1:8000/animation?name=random.cuf
-http://127.0.0.1:8000/animation.gif?name=tree
+http://127.0.0.1:8000/animation?name=tree&format=cuf
+http://127.0.0.1:8000/animation?name=random
 ```
 
 ## Build Emojis
@@ -76,16 +76,18 @@ Existing `.cuf` files are deleted before new files are generated.
 Animation CUF files live in `cufs/`.
 Source GIF files live in `gifs/`.
 
-The Cosmic Unicorn animation endpoint is:
+The animation endpoint is:
 
 ```text
 /animation?name=tree
 ```
 
-The browser preview endpoint is:
+It returns GIF by default so it can be opened in a browser.
+
+For Cosmic Unicorn, request CUF explicitly:
 
 ```text
-/animation.gif?name=tree
+/animation?name=tree&format=cuf
 ```
 
 The `name` parameter can be:
@@ -99,9 +101,10 @@ Examples:
 
 ```text
 /animation
-/animation?name=random.cuf
+/animation?name=random
 /animation?name=fireplace
-/animation?name=fireplace.cuf
+/animation?name=fireplace&format=cuf
+/animation?name=fireplace.cuf&format=cuf
 /animation.gif
 /animation.gif?name=random.gif
 /animation.gif?name=fireplace

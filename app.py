@@ -9,6 +9,7 @@ from renderer import DEFAULT_BACKGROUND, DEFAULT_TEXT_COLOR, parse_hex_color, re
 
 app = Flask(__name__)
 SUPPORTED_FORMATS = ("png", "bmp")
+SUPPORTED_ANIMATION_FORMATS = ("gif", "cuf")
 
 
 def bad_request(message):
@@ -26,6 +27,17 @@ def parse_format(value):
     output_format = value.strip().lower()
     if output_format not in SUPPORTED_FORMATS:
         raise ValueError("Format must be one of: {}".format(", ".join(SUPPORTED_FORMATS)))
+
+    return output_format
+
+
+def parse_animation_format(value):
+    if value is None or value == "":
+        return "gif"
+
+    output_format = value.strip().lower()
+    if output_format not in SUPPORTED_ANIMATION_FORMATS:
+        raise ValueError("Animation format must be one of: {}".format(", ".join(SUPPORTED_ANIMATION_FORMATS)))
 
     return output_format
 
@@ -76,15 +88,24 @@ def render_image():
 @app.get("/animation")
 def render_animation():
     try:
-        animation_name, cuf_path = resolve_animation(request.args.get("name"))
+        output_format = parse_animation_format(request.args.get("format"))
+        if output_format == "cuf":
+            animation_name, animation_path = resolve_animation(request.args.get("name"))
+            mimetype = "application/octet-stream"
+        else:
+            animation_name, animation_path = resolve_gif_animation(request.args.get("name"))
+            mimetype = "image/gif"
     except ValueError as error:
         return bad_request(str(error))
     except FileNotFoundError as error:
         return Response(str(error), status=404, mimetype="text/plain; charset=utf-8")
 
-    response = Response(cuf_path.read_bytes(), mimetype="application/octet-stream")
+    response = Response(animation_path.read_bytes(), mimetype=mimetype)
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
-    response.headers["Content-Disposition"] = "inline; filename=\"{}.cuf\"".format(make_header_safe(animation_name))
+    response.headers["Content-Disposition"] = "inline; filename=\"{}.{}\"".format(
+        make_header_safe(animation_name),
+        output_format,
+    )
     response.headers["X-Animation-Name"] = make_header_safe(animation_name)
     return response
 
