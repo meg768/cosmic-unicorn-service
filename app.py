@@ -84,11 +84,6 @@ def render_text_response():
     return response
 
 
-@app.get("/")
-def render_image():
-    return render_text_response()
-
-
 @app.get("/text")
 def render_text():
     return render_text_response()

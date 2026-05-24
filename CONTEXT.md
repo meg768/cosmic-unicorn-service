@@ -48,6 +48,7 @@ Animation format rules:
 - If `name` is omitted, the service chooses a random animation.
 - `name=random` is not special.
 - There are no `/animation.gif` or `/animation.cuf` routes.
+- There is no root text fallback; text is served only by `/text`.
 
 Examples:
 
