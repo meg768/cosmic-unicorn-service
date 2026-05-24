@@ -56,8 +56,7 @@ def image_to_response_bytes(image, output_format):
     return buffer.getvalue(), "image/png"
 
 
-@app.get("/")
-def render_image():
+def render_text_response():
     try:
         output_format = parse_format(request.args.get("format"))
         image, unsupported = render_banner(
@@ -83,6 +82,16 @@ def render_image():
         response.headers["X-Unsupported-Emoji"] = make_header_safe(" | ".join(unsupported))[:1000]
 
     return response
+
+
+@app.get("/")
+def render_image():
+    return render_text_response()
+
+
+@app.get("/text")
+def render_text():
+    return render_text_response()
 
 
 @app.get("/animation")

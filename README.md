@@ -24,9 +24,9 @@ pip install -r requirements.txt
 Then open:
 
 ```text
-http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32
-http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&font=impact
-http://127.0.0.1:8000?text=Grattis%20på%20födelsedagen!%20🥳&height=32&format=bmp
+http://127.0.0.1:8000/text?text=Grattis%20på%20födelsedagen!%20🥳&height=32
+http://127.0.0.1:8000/text?text=Grattis%20på%20födelsedagen!%20🥳&height=32&font=impact
+http://127.0.0.1:8000/text?text=Grattis%20på%20födelsedagen!%20🥳&height=32&format=bmp
 http://127.0.0.1:8000/animation?name=tree
 http://127.0.0.1:8000/animation?name=tree&format=cuf
 http://127.0.0.1:8000/animation

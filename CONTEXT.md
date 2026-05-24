@@ -32,7 +32,7 @@ https://cosmic-unicorn.egelberg.se/
 Text endpoint:
 
 ```text
-/?text=Hello&height=32&format=bmp
+/text?text=Hello&height=32&format=bmp
 ```
 
 Animation endpoint:
